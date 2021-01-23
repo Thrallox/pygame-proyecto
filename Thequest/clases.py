@@ -8,7 +8,7 @@ class Game:
         pygame.display.set_caption("The Quest")
         icon = pygame.image.load("resources/images/icon.png")
         pygame.display.set_icon(icon)
-        self.ship = Ship(268, 0, 10)
+        self.ship = Ship(268, 0.5, 10)
         
     def mainLoop(self):
         status = True
@@ -29,9 +29,11 @@ class Game:
 
 
 class Ship:
-    def __init__(self, y, vy, x):
+    def __init__(self, y, velocidad, x):
         self.y = y 
-        self.vy = vy
+        self.vy = 0
+        self.velocidad = velocidad
+        self.neutro = 0
         self.x = x
         self.disfraz = pygame.image.load("resources/images/spaceship.png")
 
@@ -41,14 +43,14 @@ class Ship:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                self.vy = -0.5
+                self.vy = -self.velocidad
         
             if event.key == pygame.K_DOWN:
-                self.vy = 0.5
+                self.vy = self.velocidad
                 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                self.vy =  0
+                self.vy =  self.neutro
 
     def yUpdate(self): 
         self.y += self.vy
