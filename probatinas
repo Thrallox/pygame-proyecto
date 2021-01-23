@@ -1,0 +1,36 @@
+ if "ship" self.y <= 0:
+    self.y = 0
+
+elif "ship" self.y >= 600 
+    self.y = 568 
+
+class Enemy: 
+    def __init__(self,x=800, y= random, vx):
+        self.x = x 
+        self. y = y 
+        self.vx= vx 
+
+
+    def EnemyMovement(self):
+       se debe crear una funcion que genere movimientos en x de forma random  
+       esta debe devolver el valor para luego incluirla en el loop
+       
+
+
+for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    status = False
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        self.ship.y += -self.ship.vy
+                        
+                    if event.key == pygame.K_DOWN:
+                        self.ship.y += self.ship.vy
+                        
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                        self.ship.y = self.ship.y
+
+
+            
