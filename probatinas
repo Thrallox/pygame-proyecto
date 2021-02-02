@@ -45,4 +45,18 @@ for event in pygame.event.get():
                 ix = 0
             '''
 self.screen.blit(tecla_espacio_img, (110,450))
+
+
+  colores =[(0,255,0), (255,255,255)]
+            tecla_espacio = pygame.font.Font("resources/espacio.ttf",25)
+            tecla_espacio_img = tecla_espacio.render("Press <SPACE BAR> in order to continue", False, colores[ix])
+            ciclosRefresco +=1
+            if ciclosRefresco == retardoAnimacion:
+                if ix == 0:
+                    ix = 1
+                else:
+                    ix = 0
+
+
+ or humanity will perish.
             
