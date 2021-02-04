@@ -1,5 +1,7 @@
 import pygame
 from Thequest import GAME_DIMENSIONS, FPS
+from pygame import mixer
+import random
 pygame.init()
 class Game: 
     def __init__(self):
@@ -10,8 +12,25 @@ class Game:
         icon = pygame.image.load("resources/images/icon.png")
         pygame.display.set_icon(icon)
         self.ship = Ship(268,7, 10)
+        self.obstaculos = Obstaculo()
         self.planeta1 = Planeta(730,-90,10)
         self.clock = pygame.time.Clock()
+        self.statusAlive = 1
+        self.ix = 0
+
+    def createObstacle(self):
+        if self.statusAlive == 1:
+            self.screen.blit(self.obstaculos.listaObstaculos[self.ix],(self.obstaculos.x, random.randint(0,536)))
+            self.ix +=1
+            if self.ix >= len(self.obstaculos.listaObstaculos):
+                self.ix=0
+        else:
+            pass
+                
+
+
+    
+
 
     def pintaPlaneta(self):
             self.screen.blit(self.planeta1.planeta_img,(self.planeta1.x,self.planeta1.y))
@@ -20,16 +39,24 @@ class Game:
             else:
                 self.planeta1.x -=1
 
+
     def mission(self):
+        sonidoMision = mixer.Sound("resources/missionMenu.wav")
+        sonidoMision.play(-1)
+        sonidoMision.set_volume(0.2)
         notReady = True
+        ix=0
+        ciclosRefresco=0
+        retardoAnimacion = 25
         while notReady:
             self.clock.tick(FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
+                    notReady = False
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        sonidoMision.stop()
                         self.mainMenu()
                         notReady=False
 
@@ -40,7 +67,7 @@ class Game:
             missionLine1 = mission.render("Greetings commander!",False,(255,255,255))
             missionLine2 = mission.render("Planet Earth cannot sustain us anymore, we need you to colonize a planet.",False,(255,255,255))
             missionLine3 = mission.render("We know you will face many dangers in dark space but...",False,(255,255,255))
-            missionLine4 = mission.render("On behalf of our specy, we ask you to help us!",False,(255,255,255))
+            missionLine4 = mission.render("On behalf of our species, we ask you to help us!",False,(255,255,255))
             missionLine5 = mission.render("Or humanity will perish...",False,(255,255,255))
             missionLine6 = mission.render("Farewell commander we hope to see you again...",False,(255,255,255))
             self.screen.blit(missionLine1, (10,40))
@@ -51,12 +78,24 @@ class Game:
             self.screen.blit(missionLine6, (10,300))
 
             #Se pone el mensaje de escape 
+            colores =[(0,0,0), (255,255,255)]
             tecla_escape = pygame.font.Font("resources/espacio.ttf",25)
-            tecla_escape_img = tecla_escape.render("Press <ESCAPE> to go back to Menu", False,(255,255,255))
+            tecla_escape_img = tecla_escape.render("Press <ESCAPE> to go back to Menu", False,colores[ix])
+            ciclosRefresco +=1
+            if ciclosRefresco == retardoAnimacion:
+                if ix == 0:
+                    ix = 1
+                else:
+                    ix = 0
+                
+                ciclosRefresco = 0
             self.screen.blit(tecla_escape_img, (125,400))
             pygame.display.update()
 
+
     def mainMenu(self):
+        sonidoMenu = mixer.Sound("resources/mainMenu.mp3")
+        sonidoMenu.play(-1)
         mainMenu = True
         x=0
         ix=0
@@ -95,34 +134,43 @@ class Game:
             self.screen.blit(tecla_enter_img, (105,450))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
+                    mainMenu = False
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
+                        sonidoMenu.stop()
                         self.controlsMenu()
                         mainMenu = False
+                        
                     if event.key == pygame.K_RETURN:
+                        sonidoMenu.stop()
                         self.mission()
                         mainMenu = False
+                        
 
             pygame.display.update()
 
 
     def controlsMenu(self):
+        sonidoControls = mixer.Sound("resources/controlsMenu.wav")
+        sonidoControls.play(-1)
+        sonidoControls.set_volume(0.2)
         notReady = True
         while notReady:
             self.clock.tick(FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
+                    notReady = False
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
+                        sonidoControls.stop()
                         self.mainLoop()
                         notReady=False
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        sonidoControls.stop()
                         self.mainMenu()
                         notReady = False
 
@@ -152,11 +200,10 @@ class Game:
             pygame.display.update()
 
 
-            
-
-
-
     def mainLoop(self):
+        sonidoL1 = mixer.Sound("resources/level1.wav")
+        sonidoL1.play(-1)
+        sonidoL1.set_volume(0.2)
         x=0
         status = True
         while status:
@@ -175,8 +222,10 @@ class Game:
                 self.ship.eventHandler(event)
 
             self.ship.yUpdate()
-            self.screen.blit(self.ship.disfraz, (self.ship.x,self.ship.y))  
-            self.pintaPlaneta()
+            self.screen.blit(self.ship.disfraz, (self.ship.x,self.ship.y))
+            self.createObstacle()
+            self.obstaculos.obstacleXupdate()
+            #self.pintaPlaneta()
             
                     
             pygame.display.update()
@@ -189,7 +238,7 @@ class Ship:
         self.velocidad = velocidad
         self.neutro = 0
         self.x = x
-        self.disfraz = pygame.image.load("resources/images/spaceship1.png")
+        self.disfraz = pygame.image.load("resources/images/battleship.png")
 
     def eventHandler(self,event):
 
@@ -226,6 +275,24 @@ class Planeta:
         self.vx = vx 
         self.planeta_img = pygame.image.load("resources/images/planeta11.png")
         self.planeta_img2 = pygame.image.load("resources/images/planeta22.png")
+
+
+class Obstaculo:
+    def __init__(self):
+        self.asteroid = pygame.image.load("resources/images/asteroid.png")
+        self.ufo = pygame.image.load("resources/images/ufo.png")
+        self.tiefighter = pygame.image.load("resources/images/tiefighter.png")
+        self.listaObstaculos = [self.asteroid, self.ufo, self.tiefighter]
+        self.x = 800
+        self.y = random.randrange(0,536)
+
+    def obstacleXupdate(self):
+        if self.x >-64:
+            self.x -= 3
+        else:
+            self.x = -64
+    
+
 
 
 
