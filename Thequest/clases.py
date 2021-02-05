@@ -12,24 +12,21 @@ class Game:
         icon = pygame.image.load("resources/images/icon.png")
         pygame.display.set_icon(icon)
         self.ship = Ship(268,7, 10)
-        self.obstaculos = Obstaculo()
         self.planeta1 = Planeta(730,-90,10)
         self.clock = pygame.time.Clock()
-        self.statusAlive = 1
-        self.ix = 0
-
-    def createObstacle(self):
-        if self.statusAlive == 1:
-            self.screen.blit(self.obstaculos.listaObstaculos[self.ix],(self.obstaculos.x, random.randint(0,536)))
-            self.ix +=1
-            if self.ix >= len(self.obstaculos.listaObstaculos):
-                self.ix=0
-        else:
-            pass
-                
-
+        self.obstaculos = []
 
     
+        for i in range (random.randint(5,10)):
+            obstaculo = Obstaculo()
+            self.obstaculos.append(obstaculo)
+            for obstaculo in self.obstaculos:
+                obstaculo.obstacleUpdate()
+        
+
+    def pintaObstaculo(self):
+        for obstaculo in self.obstaculos:
+            self.screen.blit (obstaculo.asteroid, (obstaculo.x, obstaculo.y))
 
 
     def pintaPlaneta(self):
@@ -205,6 +202,7 @@ class Game:
         sonidoL1.play(-1)
         sonidoL1.set_volume(0.2)
         x=0
+        
         status = True
         while status:
             self.clock.tick(FPS)
@@ -223,12 +221,10 @@ class Game:
 
             self.ship.yUpdate()
             self.screen.blit(self.ship.disfraz, (self.ship.x,self.ship.y))
-            self.createObstacle()
-            self.obstaculos.obstacleXupdate()
+            self.pintaObstaculo()
             #self.pintaPlaneta()
-            
-                    
             pygame.display.update()
+        
 
 
 class Ship:
@@ -280,23 +276,14 @@ class Planeta:
 class Obstaculo:
     def __init__(self):
         self.asteroid = pygame.image.load("resources/images/asteroid.png")
-        self.ufo = pygame.image.load("resources/images/ufo.png")
-        self.tiefighter = pygame.image.load("resources/images/tiefighter.png")
-        self.listaObstaculos = [self.asteroid, self.ufo, self.tiefighter]
         self.x = 800
-        self.y = random.randrange(0,536)
+        self.y = random.randint(0,536)
+        self.statusRunning = 1
 
-    def obstacleXupdate(self):
-        if self.x >-64:
+    def obstacleUpdate(self):
+        if self.statusRunning == 1:
             self.x -= 3
-        else:
-            self.x = -64
-    
-
-
-
-
-
-
-
+            if self.x == -64:
+                self.x = 800
+                self.y = random.randint(0,536)
 
